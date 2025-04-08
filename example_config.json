@@ -1,0 +1,33 @@
+{
+    "providers": {
+        "telegram": {
+            "development": {
+                "token": "REPLACE_ME",
+                "username": "REPLACE_ME",
+                "owner_username": "@REPLACE_ME",
+                "owner_id": "REPLACE_ME",
+                "prefix": "%",
+                "strip_prefix": true
+            }
+        },
+        "discord": {
+            "development": {
+                "token": "REPLACE_ME",
+                "client_id": "REPLACE_ME",
+                "username": "REPLACE_ME",
+                "owner_username": "@REPLACE_ME",
+                "owner_id": "REPLACE_ME",
+                "prefix": "%"
+            }
+        }
+    },
+    "plugin_specific": {
+        "yiff": {
+            "auth_user": "REPLACE_ME",
+            "auth_key": "REPLACE_ME"
+        },
+        "user_data_store": {
+            "encryption_key": "REPLACE_ME"
+        }
+    }
+}
