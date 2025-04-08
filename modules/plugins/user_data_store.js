@@ -36,12 +36,7 @@ function load_db() {
         db = decryptData(fs.readFileSync("user_data.enc"), key);
     } catch(err) {
         ctrl.log(`Unable to load user_data.enc!! Resetting. If the file already exists, a backup will be saved.\n\t${err}`, ctrl.LEVEL.ERROR);
-        let exists = true;
-        try {
-            fs.statSync("user_data.enc");
-        } catch(err) {
-            exists = false;
-        }
+        let exists = fs.existsSync("user_data.enc");
         if(exists) {
             try {
                 fs.copyFileSync("user_data.enc", `user_data_backup_${Date.now()}.enc`);
