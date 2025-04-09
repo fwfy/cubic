@@ -1,4 +1,4 @@
-let ctrl, db;
+let ctrl, db, environment;
 
 const fs = require('fs');
 const crypto = require('crypto');
@@ -60,11 +60,72 @@ function commandSetEncryption(cmd, args, msg) {
     }
 }
 
+/*
+    {
+        "environments": {
+            "development": {
+                "providers": {
+                    "telegram": {
+                        users: {
+                            "289041294012": {
+                                prefs: { ... },
+                                data: { ... },
+                                isLinked: bool,
+                                linked_to: String | null
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+*/
+
+function validatePath(environment, provider, uid) {
+    if(!db.environments) {
+        db.environments = {};
+    }
+    if(!db.environments[environment]) {
+        db.environments[environment] = {};
+    }
+    if(!db.environments[environment].providers) {
+        db.environments[environment].providers = {};
+    }
+    if(!db.environments[environment].providers[provider]) {
+        db.environments[environment].providers[provider] = {};
+    }
+    if(!db.environments[environment].providers[provider].users) {
+        db.environments[environment].providers[provider].users = {};
+    }
+    if(!db.environments[environment].providers[provider].users[uid]) {
+        db.environments[environment].providers[provider].users[uid] = {
+            prefs: {},
+            data: {},
+            isLinked: false,
+            linked_to: null
+        }
+    }
+    console.log(`Validated path ${environment} ${provider} ${uid}:`, db.environments[environment].providers[provider].users[uid]);
+}
+
+function getUserPreference(provider, uid, prefname) {
+    validatePath(environment, provider, uid);
+    return db.environments[environment].providers[provider].users[uid].prefs[prefname];
+}
+
+function setUserPreference(provider, uid, prefname, value) {
+    validatePath(environment, provider, uid);
+    return db.environments[environment].providers[provider].users[uid].prefs[prefname] = value;
+}
+
 function init(env, cobj, pconf) {
     ctrl = cobj;
+    environment = env;
     key = Buffer.from(pconf.encryption_key, 'hex');
+    ctrl.expose("udata.get_pref", getUserPreference);
+    ctrl.expose("udata.set_pref", setUserPreference);
     load_db();
-    // ctrl.registerCommand("encrypt", commandSetEncryption, "Enable/disable user data encryption for your account.", ["encryption", "enc", "setenc"]);
+    setInterval(save_db, 30000);
 }
 
 module.exports = init;
