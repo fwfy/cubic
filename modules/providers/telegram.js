@@ -35,7 +35,7 @@ class TelegramProvider extends Provider {
             try {
                 this.ctrl.dispatchCommand(message, this);
             } catch(err) {
-                log(`Failed to dispatch a command!\n\t${err}`, LEVEL.ERROR);
+                log(`Failed to dispatch a command!\n${err.stack}`, LEVEL.ERROR);
             }
         } else if(type == "message") {
             try {
