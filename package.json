@@ -9,6 +9,7 @@
   "author": "fwfy",
   "license": "ISC",
   "dependencies": {
+    "@fwfy/cubic-logger": "^1.0.0",
     "axios": "^1.7.9",
     "discord.js": "^14.17.3",
     "e621": "^2.2.6",
