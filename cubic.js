@@ -17,7 +17,6 @@ class SharedController extends EventEmitter {
         this.LEVEL = LEVEL;
     }
     dispatchMessage(msg) {
-        console.log(msg);
         this.emit('message', msg);
     }
     dispatchCommand(msg) {
@@ -41,7 +40,7 @@ class SharedController extends EventEmitter {
         }
     }
     expose(name, func) {
-        log(`Plugin registered exposed function ${func.name} as ${name}.`);
+        log(`Plugin registered exposed function ${func.name} as ${name}.`, LEVEL.DEBUG);
         this.exposed_functions.set(name, func);
     }
     get_exposed(name) {
@@ -73,7 +72,7 @@ async function loadConfig() {
 }
 
 async function loadProviders() {
-    log(`Loading providers...`);
+    log(`Loading providers...`, LEVEL.INFO);
     const providers_list = Object.keys(config.providers);
     log(`Found the following providers in config.json: ${providers_list.join(', ')}.`, LEVEL.DEBUG);
     for (const provider of providers_list) {
@@ -88,7 +87,7 @@ async function loadProviders() {
 }
 
 async function loadPlugins() {
-    log(`Loading plugins...`)
+    log(`Loading plugins...`, LEVEL.INFO)
     const plugins_list = await fs.readdir("./modules/plugins");
     log(`Found the following plugins: ${plugins_list.join(", ")}.`, LEVEL.DEBUG);
     for (let plugin of plugins_list) {
