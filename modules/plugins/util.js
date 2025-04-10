@@ -13,6 +13,7 @@ function commandHelp(cmd, args, msg) {
     for(const c of ctrl.commands) {
         let name = c[0];
         let info = c[1];
+        if(info.description == "[HIDDEN]") continue;
         helptext += `- ${name}: ${info.alias ? "Alias of " + info.aliasOf : info.description}\n`;
     }
     msg.reply(helptext);
