@@ -1,3 +1,4 @@
 /config.json
 /user_data.enc
 /node_modules
+/modules/plugins/test.js
