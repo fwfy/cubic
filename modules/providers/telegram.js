@@ -10,6 +10,10 @@ class TelegramProvider extends Provider {
         this.ctrl = ctrl;
         this.bot = new TelegramBot(config.token, { polling: true });
         this.bot.on('message', (msg) => this.inboundHandler(msg));
+        this.bot.on('callback_query', (msg) => {
+            this.bot.answerCallbackQuery({callback_query_id: msg.id});
+            this.inboundHandler({text: this.config.prefix+msg.data, chat: msg.message.chat, from: msg.from},true);
+        });
     }
     inboundHandler(msg) {
         /*
@@ -48,7 +52,7 @@ class TelegramProvider extends Provider {
     transformMessage(msg, type) {
         let obj = {
             source: this.platform_name,
-            reply: (text) => this.replyToMessage(this.platform_name, msg.chat.id, text),
+            reply: (text, attachments, buttons) => this.replyToMessage(this.platform_name, msg.chat.id, text, attachments, buttons),
             message: {
                 type: type,
                 content: msg.text,
@@ -70,10 +74,27 @@ class TelegramProvider extends Provider {
         }
         return obj;
     }
-    replyToMessage(source, id, text) {
+    replyToMessage(source, id, text, attachments=[], buttons=[]) {
         if(source !== this.platform_name) return; // TODO: is silently failing the best option here?
         let dest = id;
-        this.bot.sendMessage(dest, text);
+        let msg_opts = {};
+        if(buttons.length > 0) {
+            let inline_keyboard = [[]];
+            for(const button of buttons) {
+                inline_keyboard[0].push({
+                    text: button.label,
+                    callback_data: button.action
+                });
+            }
+            msg_opts.reply_markup = JSON.stringify({inline_keyboard});
+        }
+        if(attachments.length > 0) {
+            if(attachments.length > 1) log(`Only one attachment is supported at the moment for the Telegram provider.`, LEVEL.WARN);
+            msg_opts.caption = text;
+            this.bot.sendPhoto(dest, attachments[0], msg_opts);
+        } else {
+            this.bot.sendMessage(dest, text, msg_opts);
+        }
     }
 }
 
