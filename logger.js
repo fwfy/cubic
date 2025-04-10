@@ -21,8 +21,13 @@ const LOG_COLORS = {
     FATAL: colors.red
 }
 
-function log(msg, level=LOG_LEVEL.INFO) {
+function log(msg, level) {
     if(level < MIN_LEVEL) return;
+    if(typeof level == "undefined") {
+        level = LOG_LEVEL.INFO;
+        let blame = new Error().stack.split("\n")[2].trim();
+        msg += `\n\t${colors.bgCyanBright("^ NO LOG LEVEL SPECIFIED!!")} ${blame}`;
+    }
     let lvl_name = Object.keys(LOG_LEVEL)[level];
     let color = LOG_COLORS[lvl_name] || LOG_COLORS["DEFAULT"];
     console.log(`${color("["+lvl_name+"]")}\t${msg}`);
